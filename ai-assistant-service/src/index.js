@@ -8,11 +8,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.get("/", (req, res) => {
-    res.json({ msg: "AI Assistant Service is running" });
-});
+// app.get("/", (req, res) => {
+//     res.json({ msg: "AI Assistant Service is running" });
+// });
 
-app.use("/api/v1/ai", aiRoutes);
+app.use("/", aiRoutes);
 
 const PORT = process.env.PORT || 5004;
 

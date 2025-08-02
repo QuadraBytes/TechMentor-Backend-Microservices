@@ -10,12 +10,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.get("/", (req, res) => {
-    res.json({ msg: "User Service is running" });
-});
+// app.get("/", (req, res) => {
+//     res.json({ msg: "User Service is running" });
+// });
 
-app.use("/api/v1/student", studentRoutes);
-app.use("/api/v1/instructor", instructorRoutes);
+app.use("/student", studentRoutes);
+app.use("/instructor", instructorRoutes);
 
 mongoose.connect(process.env.MONGO_URI)
     .then(() => {

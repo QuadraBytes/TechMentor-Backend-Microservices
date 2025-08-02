@@ -9,11 +9,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.get("/", (req, res) => {
-    res.json({ msg: "Course Service is running" });
-});
+// app.get("/", (req, res) => {
+//     res.json({ msg: "Course Service is running" });
+// });
 
-app.use("/api/v1/course", courseRoutes);
+app.use("/", courseRoutes);
 
 mongoose.connect(process.env.MONGO_URI)
     .then(() => {

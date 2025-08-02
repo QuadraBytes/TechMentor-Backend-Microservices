@@ -9,11 +9,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.get("/", (req, res) => {
-    res.json({ msg: "Auth Service running" });
-});
+// app.get("/", (req, res) => {
+//     res.json({ msg: "Auth Service running" });
+// });
 
-app.use("/api/v1/auth", authRouter);
+app.use("/", authRouter);
 
 mongoose
     .connect(process.env.MONGO_URI)
