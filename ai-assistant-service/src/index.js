@@ -17,5 +17,5 @@ app.use("/", aiRoutes);
 const PORT = process.env.PORT || 5004;
 
 app.listen(PORT, () => {
-    console.log(`🚀 AI Assistant Service running on port ${PORT}`);
+    console.log(`AI Assistant Service running on port ${PORT}`);
 });

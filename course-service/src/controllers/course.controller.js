@@ -1,5 +1,4 @@
 const CourseModel = require("../models/course.model");
-const UserModel = require("../models/user.model");
 
 const addCourse = async (req, res, next) => {
     try {
@@ -18,16 +17,6 @@ const addCourse = async (req, res, next) => {
             });
         }
 
-        const instructor = await UserModel.findById(data.instructor_id);
-
-        if (!instructor) {
-            console.log("Instructor not found");
-            return res.status(404).json({
-                status: "error",
-                message: "Instructor not found",
-            });
-        }
-
         const newCourse = new CourseModel({
             title: data.title,
             description: data.description,
@@ -35,9 +24,6 @@ const addCourse = async (req, res, next) => {
             instructor_name: instructor.fullname,
             content: data.content,
         });
-
-        instructor.courses.push(newCourse._id);
-        await instructor.save();
 
         const result = await newCourse.save();
 
@@ -231,25 +217,17 @@ const enrollInCourse = async (req, res, next) => {
             });
         }
 
-        const student = await UserModel.findById(userId).populate("courses");
-
-        if (!student) {
-            console.log("Student not found");
-            return res.status(404).json({
-                status: "error",
-                message: "Student not found",
-            });
-        }
-
-        if (student.courses.includes(courseId)) {
-            console.log("Already enrolled in this course");
+        if (course.students.includes(userId)) {
+            console.log("Already enrolled in course");
             return res.status(400).json({
                 status: "error",
-                message: "Already enrolled in this course",
+                message: "Already enrolled in course",
             });
         }
-        student.courses.push(courseId);
-        await student.save();
+
+        course.students.push(userId);
+        await course.save();
+
         console.log("Enrolled in course successfully");
 
         return res.status(200).json({

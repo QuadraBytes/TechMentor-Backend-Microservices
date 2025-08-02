@@ -1,28 +1,14 @@
 const CourseModel = require("../models/course.model");
-const UserModel = require("../models/user.model");
 
 const getEnrolledCourses = async (req, res, next) => {
     try {
         const id = req.params.id;
 
-        const user = await UserModel.findById(id);
+        const courses = await CourseModel.find({
+            students: id,
+        }).populate("instructor_id", "fullname");
 
-        if (!user) {
-            console.log("User not found");
-            return res.status(404).json({
-                status: "error",
-                message: "User not found",
-            });
-        }
-
-        var enrolledCourses = await Promise.all(
-            user.courses.map(async (courseId) => {
-                const course = await CourseModel.findById(courseId);
-                return course;
-            })
-        );
-
-        enrolledCourses = enrolledCourses.filter((course) => course !== null);
+        const enrolledCourses = courses.filter((course) => course !== null);
 
         res.status(200).json({
             status: "success",
