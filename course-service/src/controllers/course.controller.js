@@ -198,6 +198,7 @@ const enrollInCourse = async (req, res, next) => {
     try {
         const courseId = req.params.id;
         const userId = req.body.id;
+        const username = req.body.username;
 
         console.log(userId);
 
@@ -225,7 +226,7 @@ const enrollInCourse = async (req, res, next) => {
             });
         }
 
-        course.students.push(userId);
+        course.students.push({ studentId: userId, studentName: username });
         await course.save();
 
         console.log("Enrolled in course successfully");

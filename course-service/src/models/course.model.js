@@ -33,8 +33,15 @@ const CourseSchema = new mongoose.Schema(
     students: {
       type: [
         {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "student",
+          studentId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "student",
+            required: true,
+          },
+          studentName: {
+            type: String,
+            required: true,
+          },
         },
       ],
       default: [],
