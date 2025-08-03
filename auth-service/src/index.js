@@ -15,14 +15,12 @@ app.use(express.json());
 
 app.use("/", authRouter);
 
-mongoose
-    .connect(process.env.MONGO_URI)
-    .then(() => {
-        console.log("Connected to MongoDB");
-        app.listen(process.env.PORT || 5001, () => {
-            console.log("Auth Service is running on port", process.env.PORT || 5001);
-        });
-    })
-    .catch((err) => {
-        console.error("MongoDB connection error:", err);
-    });
+try {
+  console.log("Connected to ProsgresSQL Database");
+  app.listen(process.env.PORT || 5001, () => {
+    console.log("Auth Service is running on port", process.env.PORT || 5001);
+  });
+} catch (error) {
+  console.error("PostgreSQL connection error:", err);
+}
+    
