@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const prisma = require("../prisma");
+const { PrismaClient } = require("../generated/prisma");
+const prisma = new PrismaClient();
 
 const signin = async (req, res, next) => {
   try {
@@ -13,7 +14,9 @@ const signin = async (req, res, next) => {
 
     if (!user) {
       console.log("User not found");
-      return res.status(404).json({
+      return res
+      
+      .status(404).json({
         status: "error",
         message: "User not found",
       });
