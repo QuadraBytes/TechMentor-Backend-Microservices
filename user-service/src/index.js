@@ -10,6 +10,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+const { consumeCourseCreated } = require("./utils/userConsumer");
+consumeCourseCreated();
+
+
 // app.get("/", (req, res) => {
 //     res.json({ msg: "User Service is running" });
 // });
