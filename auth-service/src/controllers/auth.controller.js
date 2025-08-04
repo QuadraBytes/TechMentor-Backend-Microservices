@@ -11,12 +11,11 @@ const signin = async (req, res, next) => {
     const user = await prisma.user.findUnique({
       where: { username },
     });
+    // MM5xsAFXHl5jG244oY0d;
 
     if (!user) {
       console.log("User not found");
-      return res
-      
-      .status(404).json({
+      return res.status(404).json({
         status: "error",
         message: "User not found",
       });
