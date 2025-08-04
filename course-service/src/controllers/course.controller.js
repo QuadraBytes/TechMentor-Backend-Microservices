@@ -1,5 +1,4 @@
 const CourseModel = require("../models/course.model");
-const UserModel = require("../models/user.model");
 const { publishCourseCreated } = require("../utils/courseProducer");
 
 const addCourse = async (req, res, next) => {
