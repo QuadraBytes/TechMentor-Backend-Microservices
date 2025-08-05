@@ -1,5 +1,5 @@
 const CourseModel = require("../models/course.model");
-const { publishCourseCreated } = require("../utils/courseProducer");
+const { publishCourseEnroll } = require("../utils/courseProducer");
 
 const addCourse = async (req, res, next) => {
     try {
@@ -27,8 +27,6 @@ const addCourse = async (req, res, next) => {
         });
 
         const result = await newCourse.save();
-
-        await publishCourseCreated(newCourse);
 
         console.log("Course added successfully");
         console.log(newCourse);
@@ -231,6 +229,11 @@ const enrollInCourse = async (req, res, next) => {
 
         course.students.push({ studentId: userId, studentName: username });
         await course.save();
+
+        await publishCourseEnroll({
+          studentId: userId,
+          studentName: username,
+        });
 
         console.log("Enrolled in course successfully");
 

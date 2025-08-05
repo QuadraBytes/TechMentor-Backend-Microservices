@@ -25,11 +25,11 @@ spec:
             secretKeyRef:
               name: user-env
               key: JWT_SECRET_ACCESS_KEY
-        - name: DATABASE_URL
+        - name: MONGO_URI
           valueFrom:
             secretKeyRef:
               name: user-env
-              key: DATABASE_URL
+              key: MONGO_URI
         - name: NODE_ENV
           valueFrom:
             configMapKeyRef:

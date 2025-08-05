@@ -1,17 +1,17 @@
 const amqp = require("amqplib");
 
-const consumeCourseCreated = async () => {
+const consumeCourseEnroll = async () => {
     try {
         const connection = await amqp.connect("amqp://localhost");
         const channel = await connection.createChannel();
-        await channel.assertQueue("course_created");
+        await channel.assertQueue("course_enroll");
 
-        console.log("Listening for course_created events...");
+        console.log("Listening for course_enroll events...");
 
-        channel.consume("course_created", async (msg) => {
+        channel.consume("course_enroll", async (msg) => {
             if (msg !== null) {
-                const course = JSON.parse(msg.content.toString());
-                console.log("Received course_created event:", course.title);
+                const student = JSON.parse(msg.content.toString());
+                console.log("Received course_enroll event:", student);
 
                 // You can handle logic here (e.g., log it, save it, notify users)
 
@@ -23,4 +23,4 @@ const consumeCourseCreated = async () => {
     }
 };
 
-module.exports = { consumeCourseCreated };
+module.exports = { consumeCourseEnroll };
