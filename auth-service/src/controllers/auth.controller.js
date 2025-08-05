@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const prisma = require("../prisma");
+const { PrismaClient } = require("../generated/prisma");
+const prisma = new PrismaClient();
 
 const signin = async (req, res, next) => {
   try {
@@ -10,6 +11,7 @@ const signin = async (req, res, next) => {
     const user = await prisma.user.findUnique({
       where: { username },
     });
+    // MM5xsAFXHl5jG244oY0d;
 
     if (!user) {
       console.log("User not found");
