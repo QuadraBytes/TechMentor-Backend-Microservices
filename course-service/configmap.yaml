@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: course-config
+data:
+  NODE_ENV: production
+  PORT: "5002"
