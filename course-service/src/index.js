@@ -9,6 +9,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+const { connectRabbitMQ } = require("./utils/courseProducer");
+connectRabbitMQ();
+
 // app.get("/", (req, res) => {
 //     res.json({ msg: "Course Service is running" });
 // });
