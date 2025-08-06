@@ -17,9 +17,10 @@ const getInstructorCourses = async (req, res, next) => {
             content: course.content,
             instructor_id: course.instructor_id,
             instructor_name: course.instructor_name,
+            instructor_email: course.instructor_email,
             students: course.students,
         }));
-    
+
         res.status(200).json({
             status: "success",
             message: "Instructor courses found successfully",

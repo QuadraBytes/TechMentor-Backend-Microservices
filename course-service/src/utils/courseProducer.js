@@ -4,7 +4,7 @@ let channel;
 
 const connectRabbitMQ = async () => {
     try {
-        const connection = await amqp.connect("amqp://localhost");
+        const connection = await amqp.connect(process.env.RABBITMQ_URL);
         channel = await connection.createChannel();
         await channel.assertQueue("course_enroll");
         console.log("RabbitMQ connected in course-service");
@@ -13,9 +13,9 @@ const connectRabbitMQ = async () => {
     }
 };
 
-const publishCourseEnroll = async (studentData) => {
+const publishCourseEnroll = async (courseDetail) => {
     if (!channel) return;
-    channel.sendToQueue("course_enroll", Buffer.from(JSON.stringify(studentData)));
+    channel.sendToQueue("course_enroll", Buffer.from(JSON.stringify(courseDetail)));
     console.log("Sent course_enroll event to queue");
 };
 

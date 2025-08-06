@@ -30,6 +30,10 @@ const CourseSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    instructor_email: {
+      type: String,
+      required: true,
+    },
     students: {
       type: [
         {
