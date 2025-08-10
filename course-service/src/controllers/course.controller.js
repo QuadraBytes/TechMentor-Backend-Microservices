@@ -1,5 +1,5 @@
 const CourseModel = require("../models/course.model");
-const UserModel = require("../models/user.model");
+const { publishCourseEnroll } = require("../utils/courseProducer");
 
 const addCourse = async (req, res, next) => {
     try {
@@ -18,26 +18,14 @@ const addCourse = async (req, res, next) => {
             });
         }
 
-        const instructor = await UserModel.findById(data.instructor_id);
-
-        if (!instructor) {
-            console.log("Instructor not found");
-            return res.status(404).json({
-                status: "error",
-                message: "Instructor not found",
-            });
-        }
-
         const newCourse = new CourseModel({
             title: data.title,
             description: data.description,
             instructor_id: data.instructor_id,
-            instructor_name: instructor.fullname,
+            instructor_name: data.instructor_name,
             content: data.content,
+            instructor_email: data.instructor_email
         });
-
-        instructor.courses.push(newCourse._id);
-        await instructor.save();
 
         const result = await newCourse.save();
 
@@ -143,6 +131,7 @@ const getAllCourses = async (req, res, next) => {
             content: course.content,
             instructor_id: course.instructor_id,
             instructor_name: course.instructor_name,
+            instructor_email: course.instructor_email,
         }));
 
         if (allCourses.length == 0) {
@@ -192,7 +181,8 @@ const getOneCourse = async (req, res, next) => {
             instructor_id: course.instructor_id,
             instructor_name: course.instructor_name,
             content: course.content,
-            isActive: course._isActive
+            isActive: course._isActive,
+            instructor_email: course.instructor_email,
         };
         console.log("Course found successfully");
         return res.status(200).json({
@@ -212,6 +202,7 @@ const enrollInCourse = async (req, res, next) => {
     try {
         const courseId = req.params.id;
         const userId = req.body.id;
+        const username = req.body.username;
 
         console.log(userId);
 
@@ -231,25 +222,24 @@ const enrollInCourse = async (req, res, next) => {
             });
         }
 
-        const student = await UserModel.findById(userId).populate("courses");
-
-        if (!student) {
-            console.log("Student not found");
-            return res.status(404).json({
-                status: "error",
-                message: "Student not found",
-            });
-        }
-
-        if (student.courses.includes(courseId)) {
-            console.log("Already enrolled in this course");
+        if (course.students.includes(userId)) {
+            console.log("Already enrolled in course");
             return res.status(400).json({
                 status: "error",
-                message: "Already enrolled in this course",
+                message: "Already enrolled in course",
             });
         }
-        student.courses.push(courseId);
-        await student.save();
+
+        course.students.push({ studentId: userId, studentName: username });
+        await course.save();
+
+        await publishCourseEnroll({
+            studentId: userId,
+            studentName: username,
+            instructorEmail: course.instructor_email,
+            courseTitle: course.title
+        });
+
         console.log("Enrolled in course successfully");
 
         return res.status(200).json({

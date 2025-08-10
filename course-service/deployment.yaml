@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: course-service
+  labels:
+    app: course-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: course-service
+  template:
+    metadata:
+      labels:
+        app: course-service
+    spec:
+      containers:
+      - name: course-service
+        image: 323690581774.dkr.ecr.us-east-1.amazonaws.com/course-service:latest
+        ports:
+        - containerPort: 5002
+        env:
+        - name: JWT_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: course-env
+              key: JWT_SECRET_ACCESS_KEY
+        - name: MONGO_URI
+          valueFrom:
+            secretKeyRef:
+              name: course-env
+              key: MONGO_URI
+        - name: NODE_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: course-config
+              key: NODE_ENV
+        - name: PORT
+          valueFrom:
+            configMapKeyRef:
+              name: course-config
+              key: PORT
