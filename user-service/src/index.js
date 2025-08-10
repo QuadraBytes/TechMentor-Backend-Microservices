@@ -10,8 +10,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const { consumeCourseEnroll } = require("./utils/userConsumer");
-consumeCourseEnroll();
+// const { consumeCourseEnroll } = require("./utils/userConsumer");
+// consumeCourseEnroll();
 
 
 // app.get("/", (req, res) => {

@@ -22,8 +22,9 @@ const addCourse = async (req, res, next) => {
             title: data.title,
             description: data.description,
             instructor_id: data.instructor_id,
-            instructor_name: instructor.fullname,
+            instructor_name: data.instructor_name,
             content: data.content,
+            instructor_email: data.instructor_email
         });
 
         const result = await newCourse.save();
@@ -130,6 +131,7 @@ const getAllCourses = async (req, res, next) => {
             content: course.content,
             instructor_id: course.instructor_id,
             instructor_name: course.instructor_name,
+            instructor_email: course.instructor_email,
         }));
 
         if (allCourses.length == 0) {
@@ -179,7 +181,8 @@ const getOneCourse = async (req, res, next) => {
             instructor_id: course.instructor_id,
             instructor_name: course.instructor_name,
             content: course.content,
-            isActive: course._isActive
+            isActive: course._isActive,
+            instructor_email: course.instructor_email,
         };
         console.log("Course found successfully");
         return res.status(200).json({
@@ -231,8 +234,10 @@ const enrollInCourse = async (req, res, next) => {
         await course.save();
 
         await publishCourseEnroll({
-          studentId: userId,
-          studentName: username,
+            studentId: userId,
+            studentName: username,
+            instructorEmail: course.instructor_email,
+            courseTitle: course.title
         });
 
         console.log("Enrolled in course successfully");
