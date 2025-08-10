@@ -1,0 +1,88 @@
+name: Deploy All Services to EKS
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'auth-service/**'
+      - 'course-service/**'
+      - 'user-service/**'
+      - 'ai-assistant-service/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      EKS_CLUSTER_NAME: ${{ secrets.EKS_CLUSTER_NAME }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Log in to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Set changed services
+        id: changed
+        run: |
+          echo "changed_services=" >> $GITHUB_OUTPUT
+          if git diff --name-only HEAD~1 | grep "^auth-service/"; then
+            echo "auth" >> changed.txt
+          fi
+          if git diff --name-only HEAD~1 | grep "^course-service/"; then
+            echo "course" >> changed.txt
+          fi
+          if git diff --name-only HEAD~1 | grep "^user-service/"; then
+            echo "user" >> changed.txt
+          fi
+          if git diff --name-only HEAD~1 | grep "^ai-assistant-service/"; then
+            echo "ai" >> changed.txt
+          fi
+          echo "changed_services=$(cat changed.txt | tr '\n' ' ')" >> $GITHUB_OUTPUT
+
+      - name: Update kubeconfig
+        run: aws eks update-kubeconfig --name $EKS_CLUSTER_NAME --region $AWS_REGION
+
+      - name: Deploy changed services
+        run: |
+          for service in ${{ steps.changed.outputs.changed_services }}
+          do
+            if [ "$service" = "auth" ]; then
+              IMAGE_URI=${{ secrets.ECR_AUTH_REPO_URI }}:latest
+              docker build -t $IMAGE_URI ./auth-service
+              docker push $IMAGE_URI
+              kubectl set image deployment/auth-service auth-service=$IMAGE_URI
+            fi
+
+            if [ "$service" = "course" ]; then
+              IMAGE_URI=${{ secrets.ECR_COURSE_REPO_URI }}:latest
+              docker build -t $IMAGE_URI ./course-service
+              docker push $IMAGE_URI
+              kubectl set image deployment/course-service course-service=$IMAGE_URI
+            fi
+
+            if [ "$service" = "user" ]; then
+              IMAGE_URI=${{ secrets.ECR_USER_REPO_URI }}:latest
+              docker build -t $IMAGE_URI ./user-service
+              docker push $IMAGE_URI
+              kubectl set image deployment/user-service user-service=$IMAGE_URI
+            fi
+
+            if [ "$service" = "ai" ]; then
+              IMAGE_URI=${{ secrets.ECR_AI_REPO_URI }}:latest
+              docker build -t $IMAGE_URI ./ai-assistant-service
+              docker push $IMAGE_URI
+              kubectl set image deployment/ai-assistant-service ai-assistant-service=$IMAGE_URI
+            fi
+          done
