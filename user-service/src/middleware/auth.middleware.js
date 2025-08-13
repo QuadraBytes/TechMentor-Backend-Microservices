@@ -5,7 +5,7 @@ const authenticateAuth = (req, res, next) => {
         const authHeader = req.headers["authorization"];
 
         if (!authHeader || !authHeader.startsWith("Bearer ")) {
-            console.log("❌ Unauthorized: No token provided");
+            console.log("Unauthorized: No token provided");
             return res.status(403).json({
                 status: "error",
                 message: "Unauthorized: Token missing",
@@ -16,7 +16,7 @@ const authenticateAuth = (req, res, next) => {
 
         jwt.verify(token, process.env.JWT_ACCESS_TOKEN_SECRET, (err, decoded) => {
             if (err) {
-                console.log("❌ Invalid token");
+                console.log("Invalid token");
                 return res.status(403).json({
                     status: "error",
                     message: "Unauthorized: Invalid token",
@@ -28,7 +28,7 @@ const authenticateAuth = (req, res, next) => {
             next();
         });
     } catch (error) {
-        console.log("❌ Middleware error:", error);
+        console.log("Middleware error:", error);
         return res.status(500).json({
             status: "error",
             message: "Internal Server Error",

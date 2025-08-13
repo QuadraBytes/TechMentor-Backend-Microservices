@@ -199,6 +199,7 @@ const getOneCourse = async (req, res, next) => {
 };
 
 const enrollInCourse = async (req, res, next) => {
+    console.log("Enrolling in course");
     try {
         const courseId = req.params.id;
         const userId = req.body.id;
