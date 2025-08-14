@@ -4,7 +4,8 @@ const UserModel = require("../models/auth.model");
 
 const googleSignin = async (req, res, next) => {
   try {
-    const { email, name, role } = req.body;
+    const { email, name } = req.body;
+    const role = req.body.role || null;
 
     if (!email || !name) {
       return res.status(400).json({
