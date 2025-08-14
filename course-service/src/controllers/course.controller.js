@@ -6,15 +6,10 @@ const addCourse = async (req, res, next) => {
         const data = req.body;
         console.log(data);
 
-        const course = await CourseModel.findOne({
-            name: data.title,
-        });
-
-        if (course) {
-            console.log("Course already added");
-            return res.status(401).json({
+        if(data.title == null || data.description == null || data.instructor_id == null || data.instructor_name == null || data.content == null || data.instructor_email == null) {
+            return res.status(400).json({
                 status: "error",
-                message: "Course already added",
+                message: "All fields are required",
             });
         }
 
@@ -24,7 +19,8 @@ const addCourse = async (req, res, next) => {
             instructor_id: data.instructor_id,
             instructor_name: data.instructor_name,
             content: data.content,
-            instructor_email: data.instructor_email
+            instructor_email: data.instructor_email,
+            image: data.image
         });
 
         const result = await newCourse.save();
@@ -52,6 +48,7 @@ const editCourse = async (req, res, next) => {
     try {
         const data = req.body;
         const courseId = req.params.id;
+        console.log("Editing course:", req.body);
 
         const course = await CourseModel.findById(courseId);
         if (!course) {
@@ -65,6 +62,7 @@ const editCourse = async (req, res, next) => {
         course.title = data.title || course.title;
         course.description = data.description || course.description;
         course.content = data.content || course.content;
+        course.image = data.image || course.image;
 
         const updatedCourse = await course.save();
 
@@ -132,6 +130,8 @@ const getAllCourses = async (req, res, next) => {
             instructor_id: course.instructor_id,
             instructor_name: course.instructor_name,
             instructor_email: course.instructor_email,
+            students: course.students,
+            image: course.image
         }));
 
         if (allCourses.length == 0) {
@@ -183,6 +183,7 @@ const getOneCourse = async (req, res, next) => {
             content: course.content,
             isActive: course._isActive,
             instructor_email: course.instructor_email,
+            image: course.image,
         };
         console.log("Course found successfully");
         return res.status(200).json({

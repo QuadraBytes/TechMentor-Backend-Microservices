@@ -14,8 +14,7 @@ const CourseSchema = new mongoose.Schema(
     },
     title: {
       type: String,
-      required: true,
-      unique: true,
+      required: true
     },
     description: {
       type: String,
@@ -33,6 +32,10 @@ const CourseSchema = new mongoose.Schema(
     instructor_email: {
       type: String,
       required: true,
+    },
+    image: {
+      type: String,
+      required: false,
     },
     students: {
       type: [

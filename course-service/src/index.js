@@ -12,9 +12,9 @@ app.use(express.json());
 const { connectRabbitMQ } = require("./utils/courseProducer");
 connectRabbitMQ();
 
-app.get("/", (req, res) => {
-    res.json({ msg: "Course Service is running" });
-});
+// app.get("/", (req, res) => {
+//     res.json({ msg: "Course Service is running" });
+// });
 
 app.use("/", courseRoutes);
 
