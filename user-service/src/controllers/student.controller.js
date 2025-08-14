@@ -6,7 +6,7 @@ const getEnrolledCourses = async (req, res, next) => {
 
         const courses = await CourseModel.find({
           "students.studentId": id,
-        }).populate("instructor_id", "fullname");
+        });
 
         const enrolledCourses = courses.filter((course) => course !== null);
 

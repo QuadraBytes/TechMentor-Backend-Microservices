@@ -1,4 +1,3 @@
-
 const CourseModel = require("../models/course.model");
 
 const getInstructorCourses = async (req, res, next) => {
@@ -19,6 +18,7 @@ const getInstructorCourses = async (req, res, next) => {
             instructor_name: course.instructor_name,
             instructor_email: course.instructor_email,
             students: course.students,
+            image: course.image,
         }));
 
         res.status(200).json({

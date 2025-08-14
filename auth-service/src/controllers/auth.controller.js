@@ -2,6 +2,71 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const UserModel = require("../models/auth.model");
 
+const googleSignin = async (req, res, next) => {
+  try {
+    const { email, name } = req.body;
+    const role = req.body.role || null;
+
+    if (!email || !name) {
+      return res.status(400).json({
+        status: "error",
+        message: "All fields are required",
+      });
+    }
+
+    let user = await UserModel.findOne({ email });
+
+    if (!user) {
+      if(!role || (role !== "student" && role !== "instructor")) {
+        return res.status(400).json({
+          status: "error",
+          message: "Role must be either 'student' or 'instructor'",
+        });
+      }
+      user = new UserModel({
+        fullname: name,
+        email,
+        role: role,
+      });
+      await user.save();
+    }
+
+    const accessToken = await jwt.sign(
+      { id: user.id, role: user.role, name: user.username },
+      process.env.JWT_ACCESS_TOKEN_SECRET,
+      { expiresIn: "1d" }
+    );
+
+    const refreshToken = await jwt.sign(
+      { id: user.id, role: user.role, name: user.username },
+      process.env.JWT_REFRESH_TOKEN_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    user.refresh = refreshToken;
+    await user.save();
+
+    res.status(200).json({
+      status: "success",
+      message: "Login successful",
+      accessToken,
+      refreshToken,
+      role: user.role,
+      user: {
+        id: user._id,
+        name: user.fullname,
+        email: user.email,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      status: "error",
+      message: "Error occurred",
+    });
+  }
+};
+
 const signin = async (req, res, next) => {
   try {
     const { username, password } = req.body;
@@ -120,6 +185,16 @@ const register = async (req, res, next) => {
     const { fullname, username, email, phone, password, role } = req.body;
     console.log(req.body);
 
+    const userfound = await UserModel.findOne({ email });
+
+    if (userfound) {
+      console.log("User already exists");
+      return res.status(400).json({
+        status: "error",
+        message: "User already exists",
+      });
+    }
+
     if (!password || !email || !phone || !username || !fullname || !role) {
       console.log("Required fields incomplete");
       return res.status(400).json({
@@ -219,6 +294,7 @@ const getProfile = async (req, res, next) => {
 };
 
 module.exports = {
+  googleSignin,
   signin,
   register,
   refreshAccessToken,

@@ -15,7 +15,6 @@ const CourseSchema = new mongoose.Schema(
     title: {
       type: String,
       required: true,
-      unique: true,
     },
     description: {
       type: String,
@@ -23,7 +22,6 @@ const CourseSchema = new mongoose.Schema(
     },
     instructor_id: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "instructor",
       required: true,
     },
     instructor_name: {
@@ -33,6 +31,10 @@ const CourseSchema = new mongoose.Schema(
     instructor_email: {
       type: String,
       required: true,
+    },
+    image: {
+      type: String,
+      required: false,
     },
     students: {
       type: [
