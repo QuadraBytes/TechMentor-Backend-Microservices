@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: course-service
-        image: 323690581774.dkr.ecr.us-east-1.amazonaws.com/course-service:latest
+        image: 290958055480.dkr.ecr.ap-south-1.amazonaws.com/course-service:latest
         ports:
         - containerPort: 5002
         env:
