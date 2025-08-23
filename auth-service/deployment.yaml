@@ -20,16 +20,16 @@ spec:
         ports:
         - containerPort: 5001
         env:
-        - name: JWT_SECRET_ACCESS_KEY
+        - name: JWT_ACCESS_TOKEN_SECRET
           valueFrom:
             secretKeyRef:
               name: auth-env
-              key: JWT_SECRET_ACCESS_KEY
-        - name: JWT_SECRET_REFRESH_KEY
+              key: JWT_ACCESS_TOKEN_SECRET
+        - name: JWT_REFRESH_TOKEN_SECRET
           valueFrom:
             secretKeyRef:
               name: auth-env
-              key: JWT_SECRET_REFRESH_KEY
+              key: JWT_REFRESH_TOKEN_SECRET
         - name: DATABASE_URL
           valueFrom:
             secretKeyRef:
