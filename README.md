@@ -40,7 +40,7 @@ Backend consists of **4 independent microservices** deployed on **Amazon EKS**:
 
 ### Clone Repository
 ```bash
-git clone https://github.com/your-org/tech-course-platform-backend.git
+git clone https://github.com/QuadraBytes/TechMentor-Backend-Microservices.git
 cd tech-course-platform-backend
 ```
 
@@ -107,4 +107,5 @@ Course Service
 
 Notification Service
   * Triggered internally when enrollment events occur
+
 
