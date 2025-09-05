@@ -1,10 +1,9 @@
 const amqp = require("amqplib");
 const AWS = require('aws-sdk');
 
-// Use env vars or hardcoded temporarily (for testing)
 AWS.config.update({
-    region: 'us-east-1', // Change to your SES region
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID, // Replace if not using env vars
+    region: 'us-east-1', 
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID, 
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
 });
 
@@ -29,7 +28,6 @@ const consumeCourseEnroll = async () => {
                 const details = JSON.parse(msg.content.toString());
                 console.log("Received course_enroll event:", details);
 
-                // You can handle logic here (e.g., log it, save it, notify users)
                 const { studentId, studentName, instructorEmail, courseTitle } = details;
 
                 await sendEmail(
@@ -48,7 +46,7 @@ const consumeCourseEnroll = async () => {
 
 const sendEmail = async (toEmail, subject, bodyText) => {
     const params = {
-        Source: "oshanimesh2000@gmail.com", // root user email
+        Source: "oshanimesh2000@gmail.com", 
         Destination: {
             ToAddresses: [toEmail]
         },
