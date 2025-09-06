@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const UserModel = require("../models/auth.model");
+const { PrismaClient } = require("../generated/prisma");
+const prisma = new PrismaClient();
 
 const googleSignin = async (req, res, next) => {
   try {
@@ -14,21 +15,22 @@ const googleSignin = async (req, res, next) => {
       });
     }
 
-    let user = await UserModel.findOne({ email });
+    let user = await prisma.user.findUnique({ where: { email } });
 
     if (!user) {
-      if(!role || (role !== "student" && role !== "instructor")) {
+      if (!role || (role !== "student" && role !== "instructor")) {
         return res.status(400).json({
           status: "error",
           message: "Role must be either 'student' or 'instructor'",
         });
       }
-      user = new UserModel({
-        fullname: name,
-        email,
-        role: role,
+      user = await prisma.user.create({
+        data: {
+          fullname: name,
+          email,
+          role: role,
+        },
       });
-      await user.save();
     }
 
     const accessToken = await jwt.sign(
@@ -44,7 +46,10 @@ const googleSignin = async (req, res, next) => {
     );
 
     user.refresh = refreshToken;
-    await user.save();
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { refresh: refreshToken },
+    });
 
     res.status(200).json({
       status: "success",
@@ -53,7 +58,7 @@ const googleSignin = async (req, res, next) => {
       refreshToken,
       role: user.role,
       user: {
-        id: user._id,
+        id: user.id,
         name: user.fullname,
         email: user.email,
       },
@@ -72,7 +77,10 @@ const signin = async (req, res, next) => {
     const { username, password } = req.body;
     console.log(req.body);
 
-    const user = await UserModel.findOne({ username });
+    const user = await prisma.user.findUnique({
+      where: { username },
+    });
+    // MM5xsAFXHl5jG244oY0d;
 
     if (!user) {
       console.log("User not found");
@@ -109,8 +117,10 @@ const signin = async (req, res, next) => {
     console.log("accessToken", accessToken);
     console.log("refreshToken", refreshToken);
 
-    user.refresh = refreshToken;
-    await user.save();
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { refresh: refreshToken },
+    });
 
     res.status(200).json({
       status: "Success",
@@ -121,7 +131,6 @@ const signin = async (req, res, next) => {
       user: {
         id: user._id,
         name: user.fullname,
-        email: user.email,
       },
     });
   } catch (error) {
@@ -137,7 +146,9 @@ const refreshAccessToken = async (req, res, next) => {
   try {
     const { id, token } = req.body;
 
-    const user = await UserModel.findById(id);
+    const user = await prisma.user.findUnique({
+      where: { id },
+    });
 
     if (!user) {
       return res.status(404).json({
@@ -185,16 +196,6 @@ const register = async (req, res, next) => {
     const { fullname, username, email, phone, password, role } = req.body;
     console.log(req.body);
 
-    const userfound = await UserModel.findOne({ email });
-
-    if (userfound) {
-      console.log("User already exists");
-      return res.status(400).json({
-        status: "error",
-        message: "User already exists",
-      });
-    }
-
     if (!password || !email || !phone || !username || !fullname || !role) {
       console.log("Required fields incomplete");
       return res.status(400).json({
@@ -210,8 +211,8 @@ const register = async (req, res, next) => {
       });
     }
 
-    const user = await UserModel.findOne({
-      $or: [{ username }],
+    const user = await prisma.user.findUnique({
+      where: { username },
     });
 
     if (user) {
@@ -225,27 +226,27 @@ const register = async (req, res, next) => {
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    const newUser = new UserModel({
-      fullname,
-      email,
-      phone,
-      username,
-      role,
-      passwordHash: hashedPassword,
+    const newUser = await prisma.user.create({
+      data: {
+        fullname,
+        username,
+        email,
+        phone,
+        role,
+        passwordHash: hashedPassword,
+      },
     });
 
-    const savedUser = await newUser.save();
-
     console.log("User created successfully");
-    console.log(savedUser);
+    console.log(newUser);
 
-    if (savedUser) {
+    if (newUser) {
       res.status(200).json({
         status: "Success",
         message: "Registration successful",
         user: {
-          id: savedUser._id,
-          name: savedUser.fullname,
+          id: newUser.id,
+          name: newUser.fullname,
         },
       });
     }
@@ -262,7 +263,9 @@ const getProfile = async (req, res, next) => {
   try {
     const id = req.params.id;
 
-    const user = await UserModel.findById(id);
+    const user = await prisma.user.findUnique({
+      where: { id },
+    });
 
     if (!user) {
       console.log("User not found");

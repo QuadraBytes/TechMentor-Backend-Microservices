@@ -46,7 +46,8 @@ cd tech-course-platform-backend
 
 ### Install Dependencies
 ```bash
-cd auth-service  //or user-service, course-service and notification-service
+cd auth-service  (or user-service, course-service and notification-service)
+npx prisma generate   (for auth service)
 npm install
 ```
 
